@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding:utf-8 -*-
 # check_coraid.py
 """
 Nagios plugin, checks status of a Coraid shelf. Runs commands 'show -l'
