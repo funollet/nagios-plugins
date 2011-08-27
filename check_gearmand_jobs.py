@@ -10,7 +10,6 @@ import sys
 import telnetlib
 import socket
 import os
-import re
 from optparse import OptionParser
 
 
@@ -251,8 +250,8 @@ def parse_gearmand_status(raw_status):
 
 
 
-def get_gearmand_status(host='localhost', port=4730, timeout=5):
-    """Connects to port 4730 and retrieves the 'status' of Gearmand.
+def get_gearmand_status(host='localhost', port=4730, timeout=0.5):
+    """Connects to 'port' and retrieves the 'status' of Gearmand.
     """
     client = telnetlib.Telnet(host, port)
     client.write('status\n')
@@ -287,7 +286,11 @@ def main():
 
     plugin = Plugin()
     plugin.add_arg("q", "queue", "Name of the queue to be checked")
+    plugin.add_arg("p", "port", "Port to connect (default: 4730)",
+            required = False)
     plugin.activate()
+    if not plugin['port']:
+        plugin['port'] = 4730
 
 
     if DEBUG_MOCK_GEARMAND:
@@ -295,7 +298,7 @@ def main():
     else:
         try:
             # String with Gearmand's output for command 'status'.
-            raw_status = get_gearmand_status(plugin.data['host'])
+            raw_status = get_gearmand_status(plugin['host'], plugin['port'])
         except socket.error:
             plugin.nagios_exit("UNKNOWN", "Failed connection")
             
