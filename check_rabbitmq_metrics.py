@@ -20,7 +20,7 @@ def show_response():
 if __name__ == '__main__':
     plugin = PluginHelper()
     plugin.parser.add_option('-H','--hostname', help="RabbitMQ host", default='127.0.0.1')
-    plugin.parser.add_option('-p','--port', help="RabbitMQ port", default='15672')
+    plugin.parser.add_option('-P','--port', help="RabbitMQ port", default='15672')
     plugin.parser.add_option('--user', help="RabbitMQ user", default='guest')
     plugin.parser.add_option('--password', help="RabbitMQ password", default='guest')
     plugin.parse_arguments()
@@ -46,12 +46,13 @@ if __name__ == '__main__':
         plugin.exit()
 
     try:
-        plugin.add_metric('deliver_rate', r.json()["message_stats"]["deliver_get_details"]["avg_rate"])
+        deliver_rate = r.json()["message_stats"]["deliver_get_details"]["avg_rate"]
     except ValueError:
         plugin.add_summary("Can't decode server's response")
         plugin.exit()
-
-
+ 
+    plugin.add_metric('deliver_rate', deliver_rate)
+    plugin.add_summary('message.deliver.avg_rate: {}'.format(deliver_rate))
     plugin.check_all_metrics()
     plugin.exit()
 
