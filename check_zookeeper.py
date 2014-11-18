@@ -40,7 +40,7 @@ if __name__ == '__main__':
         zk = ZkClient(plugin.options.hostname, plugin.options.port)
     except socket.error:
         plugin.status(critical)
-        plugin.add_summary("Can't connect to {}:{}".format(host, port))
+        plugin.add_summary("Can't connect to {}:{}".format(plugin.options.hostname, plugin.options.port))
         plugin.exit()
 
 
