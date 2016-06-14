@@ -43,15 +43,24 @@ if __name__ == '__main__':
         plugin.add_summary("Can't connect to {}:{}".format(plugin.options.hostname, plugin.options.port))
         plugin.exit()
 
-
-    if zk.cmd('ruok') != 'imok':
+    try:
+        if zk.cmd('ruok') != 'imok':
+            plugin.status(critical)
+            plugin.add_summary("Command 'ruok' failed")
+            plugin.exit()
+    except socket.error, socket.timeout:
         plugin.status(critical)
-        plugin.add_summary("Command 'ruok' failed")
+        plugin.add_summary("Can't connect to {}:{}".format(plugin.options.hostname, plugin.options.port))
         plugin.exit()
 
-    if zk.cmd('isro') != 'rw':
+    try:
+        if zk.cmd('isro') != 'rw':
+            plugin.status(critical)
+            plugin.add_summary("Zookeeper is not read-write (network partition? quorum?)")
+            plugin.exit()
+    except socket.error, socket.timeout:
         plugin.status(critical)
-        plugin.add_summary("Zookeeper is not read-write (network partition? quorum?)")
+        plugin.add_summary("Can't connect to {}:{}".format(plugin.options.hostname, plugin.options.port))
         plugin.exit()
 
     # Get Zookeeper's status.
